@@ -7,6 +7,8 @@ public:
     cpu_core();
     ~cpu_core();
 
+    word PC;
+
 private:
     memory mem;
 

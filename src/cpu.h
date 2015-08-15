@@ -8,8 +8,6 @@ public:
     ~cpu_core();
 
     word PC;
-
-private:
     memory mem;
 
 };

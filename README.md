@@ -7,7 +7,7 @@ This project is going to simulate the execution of a 32-bit MIPS CPU, and later 
 ## Structure
 
 ### CPU
-Execution stages ; Latches between stages; Control Unit
+5 Execution stages ; Latches between stages; Control Unit
 
 ### Memory
 Stack

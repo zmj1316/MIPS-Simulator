@@ -15,17 +15,18 @@ void IFS::execute()
     c->PC += 4;
     R.PC = c->PC;
     R.IR = IR;
-    R.R1 = IR&RS_MASK >> 21;
-    R.R2 = IR&RT_MASK >> 16;
-    R.Dst = IR&RD_MASK >> 11;
+    R.RS = IR&RS_MASK >> 21;
+    R.RT = IR&RT_MASK >> 16;
+    R.RD = IR&RD_MASK >> 11;
     R.imme = IR&IMME_MASK;
 }
 
 void IDS::execute()
 {
     R.IR = L.IR;
-    R.RA = c->reg[L.R1];
-    R.RB = c->reg[L.R2];
+    R.RA = c->reg[L.RS];
+    R.RB = c->reg[L.RT];
+    R.Dst = R.control()->RegDst ? L.RD : L.RT;
     R.imme = L.imme;
     /*Sign extend*/
     if (R.imme & 0x8000 == 0x8000)
@@ -39,6 +40,7 @@ void EXS::execute()
 {
     R.IR = L.IR;
     R.RB = L.RB;
+    R.Dst = L.Dst;
     ctrl *C = L.control();
     /*ALU Part*/
     word A = C->ALUSrcA ? L.RA : L.PC;
@@ -91,4 +93,41 @@ void EXS::execute()
             c->PC = R.alures;
         }
     }
+}
+
+void MYS::execute()
+{
+    const ctrl *C = L.control();
+
+    R.IR = L.IR;
+    R.Dst = L.Dst;
+    R.alures = L.alures;
+    R.MDR = 0;
+    if (C->MemRead)
+    {
+        R.MDR = c->mem.get<word>(L.alures);
+    }
+    else if (C->MemWrite)
+    {
+        c->mem.set<word>(L.alures, L.RB);
+    }
+
+}
+
+void WBS::execute()
+{
+    const ctrl *C = L.control();
+
+    if (C->RegWrite)
+    {
+        if (C->MemtoReg)
+        {
+            c->reg[L.Dst] = L.MDR;
+        }
+        else
+        {
+            c->reg[L.Dst] = L.alures;
+        }
+    }
+    c->reg[0] = 0;
 }

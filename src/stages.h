@@ -16,7 +16,7 @@ public:
 class IDL : public Latch
 {
 public:
-    byte R1, R2, Dst;
+    byte RS, RT, RD;
     word imme;
     word PC;
 };
@@ -24,6 +24,7 @@ public:
 class DEL :public Latch
 {
 public:
+    byte Dst;
     word RA, RB, imme;
     word PC;
 };
@@ -31,16 +32,25 @@ public:
 class EML :public Latch
 {
 public:
+    byte Dst;
     word alures, RB;
 };
 
+class MWL :public Latch
+{
+public:
+    byte Dst;
+    word alures, RB, MDR;
+};
 class IFS
 {
 public:
     cpu_core *c;
     IDL R;
     IFS(cpu_core *c) :c(c)
-    {}
+    {
+        init();
+    }
     void init()
     {
         memset(&R, 0, sizeof(IDL));
@@ -55,13 +65,19 @@ public:
     IDL L;
     DEL R;
     IDS(cpu_core *c) :c(c)
-    {}
+    {
+        init();
+    }
     void init()
     {
         memset(&L, 0, sizeof(IDL));
         memset(&R, 0, sizeof(DEL));
     }
     void execute();
+    void shift()
+    {
+        L = c->ifs.R;
+    }
 };
 
 class EXS
@@ -71,15 +87,59 @@ public:
     DEL L;
     EML R;
     EXS(cpu_core *c) :c(c)
-    {}
+    {
+        init();
+    }
     void init()
     {
         memset(&L, 0, sizeof(DEL));
         memset(&R, 0, sizeof(EML));
-    }void execute();
+    }
+    void execute();
+    void shift()
+    {
+        L = c->ids.R;
+    }
 };
 
+class MYS
+{
+public:
+    cpu_core *c;
+    EML L;
+    MWL R;
+    MYS(cpu_core *c) :c(c)
+    {
+        init();
+    }
+    void init()
+    {
+        memset(&L, 0, sizeof(EML));
+        memset(&R, 0, sizeof(MWL));
+    }
+    void execute();
+    void shift()
+    {
+        L = c->exs.R;
+    }
+
+};
 class WBS
 {
 public:
+    cpu_core *c;
+    MWL L;
+    WBS(cpu_core *c) :c(c)
+    {
+        init();
+    }
+    void init()
+    {
+        memset(&L, 0, sizeof(MWL));
+    }
+    void execute();
+    void shift()
+    {
+        L = c->mys.R;
+    }
 };

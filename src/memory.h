@@ -7,6 +7,7 @@ class memory
 public:
     memory();
     ~memory();
+
     template <class T>
     void set(word addr, T value)
     {
@@ -30,4 +31,3 @@ private:
     }
 
 };
-

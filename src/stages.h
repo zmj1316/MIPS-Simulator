@@ -1,7 +1,17 @@
-#pragma once
+#ifndef STAGES_H
+#define STAGES_H
 #include "Type.h"
 #include <iostream>
 #include "ctrl.h"
+
+#define OP_MASK    0xFC000000
+#define RS_MASK    0x03E00000
+#define RT_MASK    0x001F0000
+#define RD_MASK    0x0000F800
+#define SHAMT_MASK 0x000007C0
+#define FUNC_MASK  0x0000003F
+#define IMME_MASK  0x0000ffff
+
 class cpu_core;
 class Latch
 {
@@ -9,7 +19,9 @@ public:
     word IR;
     ctrl *control()
     {
-        return &ctrlDict[IR >> 26];
+        if ((IR & 0xFC1FFFFF) == 8)
+            return &(ctrls[7]);
+        return ctrlDict[IR >> 26];
     }
 };
 
@@ -74,10 +86,7 @@ public:
         memset(&R, 0, sizeof(DEL));
     }
     void execute();
-    void shift()
-    {
-        L = c->ifs.R;
-    }
+    void shift();
 };
 
 class EXS
@@ -96,10 +105,7 @@ public:
         memset(&R, 0, sizeof(EML));
     }
     void execute();
-    void shift()
-    {
-        L = c->ids.R;
-    }
+    void shift();
 };
 
 class MYS
@@ -118,10 +124,7 @@ public:
         memset(&R, 0, sizeof(MWL));
     }
     void execute();
-    void shift()
-    {
-        L = c->exs.R;
-    }
+    void shift();
 
 };
 class WBS
@@ -138,8 +141,6 @@ public:
         memset(&L, 0, sizeof(MWL));
     }
     void execute();
-    void shift()
-    {
-        L = c->mys.R;
-    }
+    void shift();
 };
+#endif /* STAGES_H */

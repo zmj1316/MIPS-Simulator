@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CPU_H
+#define CPU_H
 #include "Type.h"
 #include "memory.h"
 #include "stages.h"
@@ -8,7 +9,7 @@ public:
     cpu_core();
     ~cpu_core();
     void run();
-    word PC;
+    word PC = 0;
     memory mem;
     word reg[32];
     IFS ifs;
@@ -17,3 +18,4 @@ public:
     MYS mys;
     WBS wbs;
 };
+#endif /* CPU_H */

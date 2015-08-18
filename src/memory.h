@@ -1,6 +1,7 @@
-#pragma once
+#ifndef MEMORY_H
+#define MEMORY_H
 #include "Type.h"
-
+#include <memory>
 const word stack_seg = 0x8000;
 class memory
 {
@@ -31,3 +32,4 @@ private:
     }
 
 };
+#endif /* MEMORY_H */

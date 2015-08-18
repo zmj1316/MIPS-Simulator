@@ -1,13 +1,6 @@
-#include "stages.h"
 #include "cpu.h"
+#include "stages.h"
 
-#define OP_MASK    0xFC000000
-#define RS_MASK    0x03E00000
-#define RT_MASK    0x001F0000
-#define RD_MASK    0x0000F800
-#define SHAMT_MASK 0x000007C0
-#define FUNC_MASK  0x0000003F
-#define IMME_MASK  0x0000ffff
 
 void IFS::execute()
 {
@@ -15,10 +8,10 @@ void IFS::execute()
     c->PC += 4;
     R.PC = c->PC;
     R.IR = IR;
-    R.RS = IR&RS_MASK >> 21;
-    R.RT = IR&RT_MASK >> 16;
-    R.RD = IR&RD_MASK >> 11;
-    R.imme = IR&IMME_MASK;
+    R.RS = (IR&RS_MASK) >> 21;
+    R.RT = (IR&RT_MASK) >> 16;
+    R.RD = (IR&RD_MASK) >> 11;
+    R.imme = (IR&IMME_MASK);
 }
 
 void IDS::execute()
@@ -26,10 +19,22 @@ void IDS::execute()
     R.IR = L.IR;
     R.RA = c->reg[L.RS];
     R.RB = c->reg[L.RT];
-    R.Dst = R.control()->RegDst ? L.RD : L.RT;
+    switch (R.control()->RegDst)
+    {
+    case 0:
+        R.Dst = L.RT;
+        break;
+    case 1:
+        R.Dst = L.RS;
+        break;
+    case 2:
+        R.Dst = 31;
+    default:
+        break;
+    }
     R.imme = L.imme;
     /*Sign extend*/
-    if (R.imme & 0x8000 == 0x8000)
+    if ((R.imme & 0x8000) == 0x8000)
     {
         R.imme |= 0xffff0000;
     }
@@ -130,4 +135,24 @@ void WBS::execute()
         }
     }
     c->reg[0] = 0;
+}
+
+void IDS::shift()
+{
+    L = c->ifs.R;
+}
+
+void EXS::shift()
+{
+    L = c->ids.R;
+}
+
+void MYS::shift()
+{
+        L = c->exs.R;
+}
+
+void WBS::shift()
+{
+    L = c->mys.R;
 }

@@ -70,10 +70,23 @@ void EXS::execute()
     case 0:
         R.alures = A + B;
         break;
-    case 1:
-        /*ALU Func*/
+
     default:
         break;
+    }
+    if (C->ALUop == 1)
+    {
+        /*ALU Func*/
+        byte opcode = L.IR & 0x3F;
+        switch (opcode)
+        {
+        case 0x20:
+            R.alures = A + B;
+            break;
+
+        default:
+            break;
+        }
     }
     if (C->PCWrite)
     {
@@ -88,8 +101,10 @@ void EXS::execute()
         {
         case 4:
             taken = L.RA == L.RB;
+            break;
         case 5:
             taken = L.RA != L.RB;
+            break;
         default:
             break;
         }

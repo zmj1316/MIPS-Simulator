@@ -1,3 +1,6 @@
+/*@stages.cpp*/
+/*@Author: Key Zhang*/
+/*@*/
 #include "cpu.h"
 #include "stages.h"
 
@@ -81,7 +84,21 @@ void EXS::execute()
         switch (opcode)
         {
         case 0x20:
+        case 0x21:
             R.alures = A + B;
+            break;
+        case 0x22:
+        case 0x23:
+            R.alures = A - B;
+            break;
+        case 0x24:
+            R.alures = A & B;
+            break;
+        case 0x25:
+            R.alures = A | B;
+            break;
+        case 0x26:
+            R.alures = A ^ B;
             break;
 
         default:

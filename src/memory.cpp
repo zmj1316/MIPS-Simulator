@@ -13,4 +13,5 @@ memory::memory()
 
 memory::~memory()
 {
+    delete[] mem;
 }
